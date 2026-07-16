@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import stat
 from pathlib import Path
@@ -283,7 +284,7 @@ def validate(root: Path) -> list[str]:
         for marker in markers:
             if marker not in script_text:
                 errors.append(f"{relative}: missing marker {marker}")
-        if not script_path.stat().st_mode & stat.S_IXUSR:
+        if os.name != "nt" and not script_path.stat().st_mode & stat.S_IXUSR:
             errors.append(f"{relative}: is not executable")
 
     windows_script_contracts = {
