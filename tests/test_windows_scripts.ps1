@@ -71,3 +71,5 @@ try {
         Remove-Item $temporaryRoot -Recurse -Force
     }
 }
+
+exit 0
