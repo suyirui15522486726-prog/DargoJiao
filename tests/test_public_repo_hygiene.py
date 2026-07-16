@@ -72,12 +72,19 @@ PROMPT_MARKERS = (
     "{{TIMEZONE}}",
     "{{LOOKBACK_DAYS}}",
     "svnote-msg:<message_id>",
-    "证据不足",
     "待重试",
     "结合项目谈一谈",
     "Codex「已安排」",
     "工作日",
     "回读验证",
+)
+
+EVIDENCE_GATE_MARKERS = (
+    "作品身份",
+    "公开页缺少正文或字幕本身不能成为待重试理由",
+    "分享题目与可核验技术事实",
+    "元数据冲突",
+    "技术事实无法核验",
 )
 
 LEGACY_PRODUCT_NAME = "DaGo" + "Jiao"
@@ -186,7 +193,7 @@ WINDOWS_DARGO_MARKERS = (
     "version",
     "prompt",
     "help",
-    "DargoJiao v0.2.0",
+    "DargoJiao v0.2.1",
     "$dargojiao",
 )
 
@@ -242,6 +249,9 @@ def validate(root: Path) -> list[str]:
         for marker in SKILL_MARKERS:
             if marker not in skill_text:
                 errors.append(f"skills/dargojiao/SKILL.md: missing marker {marker}")
+        for marker in EVIDENCE_GATE_MARKERS:
+            if marker not in skill_text:
+                errors.append(f"skills/dargojiao/SKILL.md: missing evidence gate marker {marker}")
 
     prompt_path = root / "templates/automation-prompt.md"
     if prompt_path.is_file():
@@ -249,6 +259,9 @@ def validate(root: Path) -> list[str]:
         for marker in PROMPT_MARKERS:
             if marker not in prompt_text:
                 errors.append(f"templates/automation-prompt.md: missing marker {marker}")
+        for marker in EVIDENCE_GATE_MARKERS:
+            if marker not in prompt_text:
+                errors.append(f"templates/automation-prompt.md: missing evidence gate marker {marker}")
         lowered = prompt_text.lower()
         for term in FORBIDDEN_DEFAULT_RUNTIME_TERMS:
             if term.lower() in lowered:
@@ -272,7 +285,7 @@ def validate(root: Path) -> list[str]:
         "dargo": (
             "set -euo pipefail",
             "install|doctor|version|prompt|help",
-            "DargoJiao v0.2.0",
+            "DargoJiao v0.2.1",
             "$dargojiao",
         ),
     }

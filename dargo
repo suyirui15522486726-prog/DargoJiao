@@ -16,7 +16,7 @@ case "$command_name" in
     exec "$repo_root/scripts/doctor.sh"
     ;;
   version)
-    printf 'DargoJiao v0.2.0\n'
+    printf 'DargoJiao v0.2.1\n'
     ;;
   prompt)
     printf 'Use $dargojiao in Codex. Bootstrap prompt: templates/bootstrap-prompt.md\n'
