@@ -2,7 +2,7 @@
 
 ## 安装官方 CLI
 
-DaGoJiao 使用 [larksuite/cli](https://github.com/larksuite/cli) 操作飞书，不要求部署自己的机器人服务器。
+DargoJiao 使用 [larksuite/cli](https://github.com/larksuite/cli) 操作飞书，不要求部署自己的机器人服务器。
 
 ```bash
 npx @larksuite/cli@latest install
@@ -20,18 +20,18 @@ lark-cli auth status --json --verify
 3. 群内只需发送抖音分享文本和链接，不需要上传视频文件。
 4. 建议保留分享文本中的作者和标题，链接受限时 Codex 会用它们核验同一作品。
 
-群可以有其他成员。DaGoJiao 默认忽略机器人、系统消息和已撤回消息，只处理带链接的用户消息。
+群可以有其他成员。DargoJiao 默认忽略机器人、系统消息和已撤回消息，只处理带链接的用户消息。
 
 ## 准备知识库
 
 1. 创建或选择一个飞书知识空间。
 2. 把当前用户加入知识空间，并授予创建或编辑文档的权限。
-3. 按主题预先创建文档是可选的；DaGoJiao 会优先路由到现有分类，没有合适分类时才创建顶层 Docx。
+3. 按主题预先创建文档是可选的；DargoJiao 会优先路由到现有分类，没有合适分类时才创建顶层 Docx。
 4. 复制 Wiki URL 交给 Codex，不要把 URL 提交到公开仓库。
 
 ## 权限验证
 
-让 `$dagojiao` 在首次配置时完成四项预检：
+让 `$dargojiao` 在首次配置时完成四项预检：
 
 - 能找到目标群并读取一页历史消息。
 - 能读取目标 Wiki 的顶层节点。

@@ -9,12 +9,12 @@ REQUIRED_FILES = (
     "README.md",
     "LICENSE",
     ".gitignore",
-    "skills/dagojiao/SKILL.md",
-    "skills/dagojiao/agents/openai.yaml",
-    "skills/dagojiao/references/note-format.md",
-    "skills/dagojiao/references/deduplication.md",
-    "skills/dagojiao/references/troubleshooting.md",
-    "skills/dagojiao/templates/automation-prompt.md",
+    "skills/dargojiao/SKILL.md",
+    "skills/dargojiao/agents/openai.yaml",
+    "skills/dargojiao/references/note-format.md",
+    "skills/dargojiao/references/deduplication.md",
+    "skills/dargojiao/references/troubleshooting.md",
+    "skills/dargojiao/templates/automation-prompt.md",
     "templates/automation-prompt.md",
     "templates/bootstrap-prompt.md",
     "templates/setup-checklist.md",
@@ -43,7 +43,7 @@ FORBIDDEN_PATTERNS = (
 )
 
 SKILL_MARKERS = (
-    "name: dagojiao",
+    "name: dargojiao",
     "description: Use when",
     "references/note-format.md",
     "references/deduplication.md",
@@ -67,10 +67,19 @@ PROMPT_MARKERS = (
     "证据不足",
     "待重试",
     "结合项目谈一谈",
-    "Codex 已安排",
-    "macOS 通知中心",
+    "Codex「已安排」",
     "工作日",
     "回读验证",
+)
+
+FORBIDDEN_CURRENT_PRODUCT_TERMS = (
+    "# DaGoJiao",
+    "name: dagojiao",
+    "$dagojiao",
+    "DAGOJIAO_SKILLS_DIR",
+    "macOS 通知中心",
+    "Windows Toast",
+    "发送简短群回执",
 )
 
 FORBIDDEN_DEFAULT_RUNTIME_TERMS = (
@@ -82,27 +91,27 @@ FORBIDDEN_DEFAULT_RUNTIME_TERMS = (
 )
 
 README_MARKERS = (
-    "# DaGoJiao",
+    "# DargoJiao",
     "## 前置条件",
     "## 五分钟开始",
     "## 飞书授权",
     "## 创建自动化",
     "## 首次验收",
     "## 去重机制",
-    "## 异常通知",
+    "## 运行结果",
     "## 安全",
     "## 故障排查",
     "## 卸载",
     "## 升级",
-    "git clone https://github.com/suyirui15522486726-prog/DaGoJiao.git",
+    "git clone https://github.com/suyirui15522486726-prog/DargoJiao.git",
     "./scripts/install.sh",
     "./scripts/doctor.sh",
-    "$dagojiao",
+    "$dargojiao",
 )
 
 INSTALL_MARKERS = (
     "set -euo pipefail",
-    "DAGOJIAO_SKILLS_DIR",
+    "DARGOJIAO_SKILLS_DIR",
     "$HOME/.agents/skills",
     "./scripts/doctor.sh",
 )
@@ -129,6 +138,14 @@ def _public_text_files(root: Path) -> list[Path]:
     ]
 
 
+def _current_product_text_files(root: Path) -> list[Path]:
+    return [
+        path
+        for path in _public_text_files(root)
+        if "superpowers" not in path.relative_to(root).parts
+    ]
+
+
 def validate(root: Path) -> list[str]:
     errors: list[str] = []
 
@@ -146,12 +163,19 @@ def validate(root: Path) -> list[str]:
             if pattern.search(content):
                 errors.append(f"{relative}: contains {label}")
 
-    skill_path = root / "skills/dagojiao/SKILL.md"
+    for path in _current_product_text_files(root):
+        content = path.read_text(encoding="utf-8")
+        relative = path.relative_to(root)
+        for term in FORBIDDEN_CURRENT_PRODUCT_TERMS:
+            if term in content:
+                errors.append(f"{relative}: contains legacy or notification term {term}")
+
+    skill_path = root / "skills/dargojiao/SKILL.md"
     if skill_path.is_file():
         skill_text = skill_path.read_text(encoding="utf-8")
         for marker in SKILL_MARKERS:
             if marker not in skill_text:
-                errors.append(f"skills/dagojiao/SKILL.md: missing marker {marker}")
+                errors.append(f"skills/dargojiao/SKILL.md: missing marker {marker}")
 
     prompt_path = root / "templates/automation-prompt.md"
     if prompt_path.is_file():
@@ -164,7 +188,7 @@ def validate(root: Path) -> list[str]:
             if term.lower() in lowered:
                 errors.append(f"templates/automation-prompt.md: forbidden runtime term {term}")
 
-    bundled_prompt = root / "skills/dagojiao/templates/automation-prompt.md"
+    bundled_prompt = root / "skills/dargojiao/templates/automation-prompt.md"
     if prompt_path.is_file() and bundled_prompt.is_file():
         if prompt_path.read_bytes() != bundled_prompt.read_bytes():
             errors.append("automation prompt copies differ")

@@ -6,7 +6,7 @@
 ./scripts/doctor.sh
 ```
 
-## 找不到 `$dagojiao`
+## 找不到 `$dargojiao`
 
 重新安装并重启 Codex：
 
@@ -14,7 +14,7 @@
 ./scripts/install.sh
 ```
 
-确认 `$HOME/.agents/skills/dagojiao/SKILL.md` 存在。Codex 官方用户级 Skill 目录是 `$HOME/.agents/skills`。
+确认 `$HOME/.agents/skills/dargojiao/SKILL.md` 存在。Codex 官方用户级 Skill 目录是 `$HOME/.agents/skills`。
 
 ## 飞书授权失效
 
@@ -38,7 +38,7 @@ lark-cli auth status --json --verify
 ## 网络或代理不稳定
 
 - 确认飞书和短视频页面能在本机打开。
-- 代理可以使用系统模式或 shell 环境变量；DaGoJiao 不强制某个代理端口。
+- 代理可以使用系统模式或 shell 环境变量；DargoJiao 不强制某个代理端口。
 - 网络失败时任务不应写成功标识。恢复后手动运行或等待下一个工作日。
 
 ## 电脑睡眠或错过计划时间
@@ -56,7 +56,6 @@ lark-cli auth status --json --verify
 3. 暂停重复的计划任务，只保留一个。
 4. 不要直接删除全部笔记；先确定哪一条包含正确唯一键。
 
-## 通知没有弹出
+## 没有看到运行结果
 
-Codex「已安排」结果仍是可靠记录。检查 macOS 系统设置中的通知权限；飞书授权失效时无法向飞书群发送异常提醒。
-
+打开 Codex「已安排」，检查任务是否启用、是否到达执行时间以及最近一次运行是否失败。本工作流不依赖操作系统弹窗或飞书主动提醒。

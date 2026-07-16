@@ -1,9 +1,9 @@
 ---
-name: dagojiao
+name: dargojiao
 description: Use when a user wants to configure, run, troubleshoot, or share a Codex workflow that turns Feishu group short-video links into deduplicated interview notes in Feishu Wiki.
 ---
 
-# DaGoJiao
+# DargoJiao
 
 把 Codex 作为执行主体，把飞书群中的短视频分享链接整理为可核验、可去重、可关联本地项目的面试笔记。
 
@@ -33,7 +33,7 @@ description: Use when a user wants to configure, run, troubleshoot, or share a C
 6. 只读检查配置的本地项目与固定 Git ref。只有知识点与真实代码直接相关时，才加入项目路径、符号和代码块；不要切换分支或修改工作区。
 7. 根据 Topic 路由到最合适的 Wiki 文档；没有合适分类时才创建顶层 Docx。
 8. 写入后回读，验证唯一标识仅出现一次，再计入成功数。
-9. 在 Codex 已安排任务结果中输出成功数、跳过数、待重试数、分类和异常。飞书可用时发送简短群回执；异常时尽力发送 macOS 通知。
+9. 在 Codex「已安排」任务结果中输出成功数、跳过数、待重试数、分类、异常阶段和用户动作。
 
 ## 必须保持的边界
 
@@ -49,4 +49,3 @@ description: Use when a user wants to configure, run, troubleshoot, or share a C
 - 三层去重与重试语义：`references/deduplication.md`
 - 故障分类和用户动作：`references/troubleshooting.md`
 - 可直接用于 Codex 已安排任务的模板：`templates/automation-prompt.md`
-

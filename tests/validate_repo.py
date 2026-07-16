@@ -9,5 +9,4 @@ ROOT = Path(__file__).parents[1]
 errors = validate(ROOT)
 if errors:
     raise SystemExit("\n".join(errors))
-print("DaGoJiao repository validation passed")
-
+print("DargoJiao repository validation passed")
