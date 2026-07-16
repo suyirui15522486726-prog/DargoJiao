@@ -32,7 +32,7 @@ try {
 
     $version = & (Join-Path $repoRoot "dargo.cmd") version
     Assert-Equal 0 $LASTEXITCODE "Version command failed"
-    Assert-Equal "DargoJiao v0.2.0" ($version | Select-Object -Last 1) "Unexpected version"
+    Assert-Equal "DargoJiao v0.2.1" ($version | Select-Object -Last 1) "Unexpected version"
 
     $prompt = & (Join-Path $repoRoot "dargo.cmd") prompt
     Assert-Equal 0 $LASTEXITCODE "Prompt command failed"

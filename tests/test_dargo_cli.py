@@ -28,7 +28,7 @@ class DargoCliTests(unittest.TestCase):
         result = self.run_dargo("version")
 
         self.assertEqual(result.returncode, 0)
-        self.assertEqual(result.stdout.strip(), "DargoJiao v0.2.0")
+        self.assertEqual(result.stdout.strip(), "DargoJiao v0.2.1")
 
     def test_prompt_points_to_skill(self) -> None:
         result = self.run_dargo("prompt")

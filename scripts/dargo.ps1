@@ -20,7 +20,7 @@ switch ($CommandName.ToLowerInvariant()) {
         exit $LASTEXITCODE
     }
     "version" {
-        Write-Output "DargoJiao v0.2.0"
+        Write-Output "DargoJiao v0.2.1"
         exit 0
     }
     "prompt" {
