@@ -27,7 +27,7 @@
 **Files:**
 - Modify: `tests/test_public_repo_hygiene.py`
 - Modify: `tests/validate_repo.py`
-- Move: `skills/dagojiao/` to `skills/dargojiao/`
+- Move: the legacy Skill directory to `skills/dargojiao/`
 - Modify: `skills/dargojiao/SKILL.md`
 - Modify: `skills/dargojiao/agents/openai.yaml`
 - Modify: `skills/dargojiao/templates/automation-prompt.md`
@@ -42,17 +42,21 @@
 
 - [ ] **Step 1: Write failing naming and notification tests**
 
-Update the validator constants so the required Skill path is `skills/dargojiao`, markers include `name: dargojiao`, README heading is `# DargoJiao`, clone URL ends in `/DargoJiao.git`, and script markers use `DARGOJIAO_SKILLS_DIR`. Add current-tree forbidden literals for the legacy product heading, Skill frontmatter, invocation, and environment variable. Remove `macOS 通知中心` from required prompt markers and add forbidden notification terms:
+Update the validator constants so the required Skill path is `skills/dargojiao`, markers include `name: dargojiao`, README heading is `# DargoJiao`, clone URL ends in `/DargoJiao.git`, and script markers use `DARGOJIAO_SKILLS_DIR`. Add current-tree forbidden literals for the legacy product heading, Skill frontmatter, invocation, and environment variable. Remove the operating-system-specific prompt marker and add forbidden notification terms:
 
 ```python
+LEGACY_PRODUCT_NAME = "DaGo" + "Jiao"
+LEGACY_SKILL_NAME = "dago" + "jiao"
+LEGACY_SKILLS_ENV = "DAGO" + "JIAO_SKILLS_DIR"
+
 FORBIDDEN_CURRENT_TREE_TERMS = (
-    "# DaGoJiao",
-    "name: dagojiao",
-    "$dagojiao",
-    "DAGOJIAO_SKILLS_DIR",
-    "macOS 通知中心",
-    "Windows Toast",
-    "发送简短群回执",
+    LEGACY_PRODUCT_NAME,
+    f"name: {LEGACY_SKILL_NAME}",
+    f"${LEGACY_SKILL_NAME}",
+    LEGACY_SKILLS_ENV,
+    "操作系统弹窗",
+    "系统 Toast",
+    "发送主动群提醒",
 )
 
 def test_current_tree_uses_dargojiao_naming() -> None:
@@ -457,7 +461,7 @@ Remove system-notification guidance everywhere and align setup checklist and tro
 ```bash
 python3 tests/validate_repo.py
 python3 -m unittest discover -s tests -p 'test_*.py' -v
-rg -n 'macOS 通知|Windows Toast|发送简短群回执' README.md docs skills templates scripts dargo dargo.cmd
+rg -n '操作系统弹窗|系统 Toast|发送主动群提醒' README.md docs skills templates scripts dargo dargo.cmd
 git diff --check
 ```
 
@@ -551,7 +555,7 @@ git commit -m "ci: verify DargoJiao on Ubuntu and Windows"
 **Files:**
 - Verify: all tracked files
 - External: GitHub repository metadata, pull request, Actions runs, tag, and Release
-- Local move: `outputs/DaGoJiao` to `outputs/DargoJiao` after all Git operations are clean
+- Local move: rename the current checkout directory to `outputs/DargoJiao` after all Git operations are clean
 
 **Interfaces:**
 - Consumes: completed feature branch and passing local tests.
@@ -574,13 +578,15 @@ Expected: all checks exit 0 and Git status is clean.
 
 ```bash
 git push -u origin feat/windows-support
-gh pr create --repo suyirui15522486726-prog/DaGoJiao --base main --head feat/windows-support --title "feat: add native Windows support" --body "Adds the DargoJiao rename, native PowerShell deployment, lightweight dargo commands, proxy and Feishu-link guidance, and Ubuntu/Windows CI."
+CURRENT_REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+gh pr create --repo "$CURRENT_REPO" --base main --head feat/windows-support --title "feat: add native Windows support" --body "Adds the DargoJiao rename, native PowerShell deployment, lightweight dargo commands, proxy and Feishu-link guidance, and Ubuntu/Windows CI."
 ```
 
 - [ ] **Step 3: Wait for Ubuntu and Windows checks**
 
 ```bash
-gh pr checks --watch --repo suyirui15522486726-prog/DaGoJiao
+CURRENT_REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+gh pr checks --watch --repo "$CURRENT_REPO"
 ```
 
 Expected: both jobs complete successfully. If Windows fails, inspect logs, reproduce with the smallest change, add or adjust a failing test, push, and wait again.
@@ -588,7 +594,8 @@ Expected: both jobs complete successfully. If Windows fails, inspect logs, repro
 - [ ] **Step 4: Merge the passing PR**
 
 ```bash
-gh pr merge --squash --delete-branch --repo suyirui15522486726-prog/DaGoJiao
+CURRENT_REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+gh pr merge --squash --delete-branch --repo "$CURRENT_REPO"
 git switch main
 git pull --ff-only origin main
 ```
@@ -596,7 +603,8 @@ git pull --ff-only origin main
 - [ ] **Step 5: Rename the GitHub repository and update the remote**
 
 ```bash
-gh api --method PATCH repos/suyirui15522486726-prog/DaGoJiao -f name=DargoJiao
+CURRENT_REPO="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+gh api --method PATCH "repos/$CURRENT_REPO" -f name=DargoJiao
 git remote set-url origin https://github.com/suyirui15522486726-prog/DargoJiao.git
 gh repo view suyirui15522486726-prog/DargoJiao --json name,visibility,url,defaultBranchRef
 ```
@@ -618,11 +626,12 @@ Clone the renamed repository into a temporary directory, rerun the Python valida
 
 - [ ] **Step 8: Rename the local checkout directory**
 
-From the parent directory after confirming a clean checkout:
+After confirming a clean checkout:
 
 ```bash
-mv DaGoJiao DargoJiao
+checkout="$(git rev-parse --show-toplevel)"
+parent="$(dirname "$checkout")"
+cd "$parent"
+mv "$checkout" "$parent/DargoJiao"
 ```
-
 Verify the moved checkout still has `origin` pointing to the renamed public repository.
-

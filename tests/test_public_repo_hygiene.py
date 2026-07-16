@@ -80,14 +80,18 @@ PROMPT_MARKERS = (
     "回读验证",
 )
 
+LEGACY_PRODUCT_NAME = "DaGo" + "Jiao"
+LEGACY_SKILL_NAME = "dago" + "jiao"
+LEGACY_SKILLS_ENV = "DAGO" + "JIAO_SKILLS_DIR"
+
 FORBIDDEN_CURRENT_PRODUCT_TERMS = (
-    "# DaGoJiao",
-    "name: dagojiao",
-    "$dagojiao",
-    "DAGOJIAO_SKILLS_DIR",
-    "macOS 通知中心",
-    "Windows Toast",
-    "发送简短群回执",
+    LEGACY_PRODUCT_NAME,
+    f"name: {LEGACY_SKILL_NAME}",
+    f"${LEGACY_SKILL_NAME}",
+    LEGACY_SKILLS_ENV,
+    "macOS " + "通知中心",
+    "Windows " + "Toast",
+    "发送简短" + "群回执",
 )
 
 FORBIDDEN_DEFAULT_RUNTIME_TERMS = (
@@ -205,11 +209,7 @@ def _public_text_files(root: Path) -> list[Path]:
 
 
 def _current_product_text_files(root: Path) -> list[Path]:
-    return [
-        path
-        for path in _public_text_files(root)
-        if "superpowers" not in path.relative_to(root).parts
-    ]
+    return _public_text_files(root)
 
 
 def validate(root: Path) -> list[str]:
