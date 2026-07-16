@@ -24,7 +24,7 @@ jobs:
         run: python tests/validate_repo.py
 
       - name: Test dargo command
-        run: python -m unittest discover -s tests -p 'test_dargo_cli.py' -v
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
 
       - name: Check Bash syntax
         run: bash -n dargo scripts/install.sh scripts/doctor.sh

@@ -6,6 +6,20 @@ DargoJiao 是 **Codex Skill + Codex 已安排任务模板**，不是独立爬虫
 
 `cargo` 负责 Rust，`dargo` 负责把 DargoJiao 装好、查好；真正的视频分析、项目关联和飞书写入仍由 Codex 完成。
 
+## 效果预览
+
+### 飞书知识库笔记效果
+
+DargoJiao 会把短视频中的面试知识整理成连续编号、错误答题、高分答题、可选项目关联和视频来源，并自动路由到合适的知识库文档。
+
+![飞书知识库笔记效果](docs/images/feishu-note-preview.png)
+
+### 飞书机器人群聊示意图
+
+把抖音分享链接发送到指定飞书群，DargoJiao 会在手动运行或计划任务执行时读取链接、完成去重，并把结构化笔记归档到目标知识库。
+
+![飞书机器人群聊示意图](docs/images/feishu-chat-preview.png)
+
 ## 平台支持
 
 | 平台 | 安装入口 | 验证方式 | 状态 |
