@@ -1,0 +1,15 @@
+.DS_Store
+.codex/
+.local/
+__pycache__/
+*.py[cod]
+*.log
+config.local.*
+cookies.txt
+*.mp3
+*.mp4
+*.m4a
+*.mov
+*.wav
+*.webm
+

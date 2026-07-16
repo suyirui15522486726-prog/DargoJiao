@@ -1,0 +1,4 @@
+interface:
+  display_name: "DaGoJiao"
+  short_description: "用 Codex 把飞书短视频链接整理为可去重的面试笔记"
+  default_prompt: "使用 $dagojiao 帮我配置飞书短视频面试笔记自动化。"
