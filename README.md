@@ -1,6 +1,6 @@
 # DargoJiao
 
-大狗叫结合用 Codex 把飞书群里的短视频面试链接整理成结构化、可去重、可关联本地项目源码的飞书知识库笔记。是一个轻量级的面试辅助工作流利器。
+DargoJiao（大狗叫）结合 Codex，把飞书群里的短视频面试链接整理成结构化、可去重、可关联本地项目源码的飞书知识库笔记，是一个轻量级的面试辅助工作流利器。
 
 DargoJiao 是 **Codex Skill + Codex 已安排任务模板**，不是独立爬虫或常驻服务。运行必须使用 ChatGPT/Codex Desktop 和官方 `lark-cli`。默认流程不安装媒体下载器、FFmpeg、本地语音模型、守护进程、数据库或服务器。
 
@@ -23,7 +23,7 @@ DargoJiao 是 **Codex Skill + Codex 已安排任务模板**，不是独立爬虫
 
 Codex 官方说明：Skill 可以为计划任务提供可复用工作流；本地项目计划任务运行时，需要电脑保持开机和唤醒、桌面应用保持运行、本地项目仍在磁盘上。参见 [Build skills](https://learn.chatgpt.com/docs/build-skills) 和 [Scheduled tasks](https://learn.chatgpt.com/docs/automations)。
 
-## 五分钟开始--当然你可以直接交给你的codex无脑部署
+## 五分钟开始——当然你可以直接交给 Codex 无脑部署
 
 1. 按操作系统完成安装和诊断。
 2. 准备输入飞书群和目标 Wiki/Docx 的完整链接。
