@@ -25,6 +25,7 @@ REQUIRED_FILES = (
     "docs/troubleshooting.md",
     "scripts/install.sh",
     "scripts/doctor.sh",
+    "dargo",
 )
 
 IGNORED_SCAN_PARTS = {".git", "tests", "__pycache__"}
@@ -203,6 +204,12 @@ def validate(root: Path) -> list[str]:
     script_contracts = {
         "scripts/install.sh": INSTALL_MARKERS,
         "scripts/doctor.sh": DOCTOR_MARKERS,
+        "dargo": (
+            "set -euo pipefail",
+            "install|doctor|version|prompt|help",
+            "DargoJiao v0.2.0",
+            "$dargojiao",
+        ),
     }
     for relative, markers in script_contracts.items():
         script_path = root / relative
