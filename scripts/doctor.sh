@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-skills_root="${DAGOJIAO_SKILLS_DIR:-$HOME/.agents/skills}"
+skills_root="${DARGOJIAO_SKILLS_DIR:-$HOME/.agents/skills}"
 failures=0
 
 pass() {
@@ -29,6 +29,18 @@ else
   fail "Codex CLI is missing; install or update Codex Desktop"
 fi
 
+if command -v node >/dev/null 2>&1; then
+  pass "Node.js is available"
+else
+  fail "Node.js is missing"
+fi
+
+if command -v npm >/dev/null 2>&1; then
+  pass "npm is available"
+else
+  fail "npm is missing"
+fi
+
 if command -v lark-cli >/dev/null 2>&1; then
   pass "lark-cli is available"
   if lark-cli auth status --json --verify >/dev/null 2>&1; then
@@ -40,10 +52,10 @@ else
   fail "lark-cli is missing"
 fi
 
-if [[ -f "$skills_root/dagojiao/SKILL.md" ]]; then
-  pass "DaGoJiao Skill is installed"
+if [[ -f "$skills_root/dargojiao/SKILL.md" ]]; then
+  pass "DargoJiao Skill is installed"
 else
-  fail "DaGoJiao Skill is not installed; run ./scripts/install.sh"
+  fail "DargoJiao Skill is not installed; run ./scripts/install.sh"
 fi
 
 if [[ -r . ]]; then
@@ -58,11 +70,11 @@ else
   warn "No shell HTTPS proxy detected; system proxy may still be active"
 fi
 
-warn "Short-video pages can still be temporarily unavailable; DaGoJiao will keep them retryable"
+warn "Short-video pages can still be temporarily unavailable; DargoJiao will keep them retryable"
 
 if ((failures > 0)); then
   printf 'FAIL: %d required check(s) failed\n' "$failures" >&2
   exit 1
 fi
 
-pass "DaGoJiao environment is ready"
+pass "DargoJiao environment is ready"

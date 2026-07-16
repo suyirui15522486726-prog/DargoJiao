@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import stat
 from pathlib import Path
@@ -9,12 +10,12 @@ REQUIRED_FILES = (
     "README.md",
     "LICENSE",
     ".gitignore",
-    "skills/dagojiao/SKILL.md",
-    "skills/dagojiao/agents/openai.yaml",
-    "skills/dagojiao/references/note-format.md",
-    "skills/dagojiao/references/deduplication.md",
-    "skills/dagojiao/references/troubleshooting.md",
-    "skills/dagojiao/templates/automation-prompt.md",
+    "skills/dargojiao/SKILL.md",
+    "skills/dargojiao/agents/openai.yaml",
+    "skills/dargojiao/references/note-format.md",
+    "skills/dargojiao/references/deduplication.md",
+    "skills/dargojiao/references/troubleshooting.md",
+    "skills/dargojiao/templates/automation-prompt.md",
     "templates/automation-prompt.md",
     "templates/bootstrap-prompt.md",
     "templates/setup-checklist.md",
@@ -25,6 +26,13 @@ REQUIRED_FILES = (
     "docs/troubleshooting.md",
     "scripts/install.sh",
     "scripts/doctor.sh",
+    "scripts/install.ps1",
+    "scripts/doctor.ps1",
+    "scripts/dargo.ps1",
+    "dargo",
+    "dargo.cmd",
+    "tests/test_windows_scripts.ps1",
+    ".github/workflows/ci.yml",
 )
 
 IGNORED_SCAN_PARTS = {".git", "tests", "__pycache__"}
@@ -43,7 +51,7 @@ FORBIDDEN_PATTERNS = (
 )
 
 SKILL_MARKERS = (
-    "name: dagojiao",
+    "name: dargojiao",
     "description: Use when",
     "references/note-format.md",
     "references/deduplication.md",
@@ -67,10 +75,23 @@ PROMPT_MARKERS = (
     "证据不足",
     "待重试",
     "结合项目谈一谈",
-    "Codex 已安排",
-    "macOS 通知中心",
+    "Codex「已安排」",
     "工作日",
     "回读验证",
+)
+
+LEGACY_PRODUCT_NAME = "DaGo" + "Jiao"
+LEGACY_SKILL_NAME = "dago" + "jiao"
+LEGACY_SKILLS_ENV = "DAGO" + "JIAO_SKILLS_DIR"
+
+FORBIDDEN_CURRENT_PRODUCT_TERMS = (
+    LEGACY_PRODUCT_NAME,
+    f"name: {LEGACY_SKILL_NAME}",
+    f"${LEGACY_SKILL_NAME}",
+    LEGACY_SKILLS_ENV,
+    "macOS " + "通知中心",
+    "Windows " + "Toast",
+    "发送简短" + "群回执",
 )
 
 FORBIDDEN_DEFAULT_RUNTIME_TERMS = (
@@ -82,27 +103,42 @@ FORBIDDEN_DEFAULT_RUNTIME_TERMS = (
 )
 
 README_MARKERS = (
-    "# DaGoJiao",
+    "# DargoJiao",
     "## 前置条件",
     "## 五分钟开始",
+    "## Windows 原生部署",
+    "## macOS 与 Linux 部署",
+    "## 代理与网络",
+    "## 飞书群与知识库链接",
     "## 飞书授权",
     "## 创建自动化",
     "## 首次验收",
     "## 去重机制",
-    "## 异常通知",
+    "## 运行结果",
     "## 安全",
     "## 故障排查",
     "## 卸载",
     "## 升级",
-    "git clone https://github.com/suyirui15522486726-prog/DaGoJiao.git",
+    "git clone https://github.com/suyirui15522486726-prog/DargoJiao.git",
+    ".\\dargo.cmd install",
+    ".\\dargo.cmd doctor",
+    "./dargo install",
+    "./dargo doctor",
+    "Get-ChildItem Env:HTTP_PROXY,Env:HTTPS_PROXY",
+    "netsh winhttp show proxy",
+    "Test-NetConnection open.feishu.cn -Port 443",
+    "lark-cli auth status --json --verify",
+    "Wiki",
+    "Docx",
+    "Codex「已安排」",
     "./scripts/install.sh",
     "./scripts/doctor.sh",
-    "$dagojiao",
+    "$dargojiao",
 )
 
 INSTALL_MARKERS = (
     "set -euo pipefail",
-    "DAGOJIAO_SKILLS_DIR",
+    "DARGOJIAO_SKILLS_DIR",
     "$HOME/.agents/skills",
     "./scripts/doctor.sh",
 )
@@ -111,12 +147,55 @@ DOCTOR_MARKERS = (
     "set -euo pipefail",
     "command -v git",
     "command -v codex",
+    "command -v node",
+    "command -v npm",
     "command -v lark-cli",
     "lark-cli auth status --json --verify",
     "$HOME/.agents/skills",
     "PASS",
     "WARN",
     "FAIL",
+)
+
+WINDOWS_INSTALL_MARKERS = (
+    '$ErrorActionPreference = "Stop"',
+    "DARGOJIAO_SKILLS_DIR",
+    ".agents\\skills",
+    "dargojiao",
+    "Move-Item",
+    "PASS",
+)
+
+WINDOWS_DOCTOR_MARKERS = (
+    "Get-Command",
+    "git",
+    "codex",
+    "node",
+    "npm",
+    "lark-cli",
+    "auth status --json --verify",
+    "DARGOJIAO_SKILLS_DIR",
+    "PASS",
+    "WARN",
+    "FAIL",
+)
+
+WINDOWS_DARGO_MARKERS = (
+    "install",
+    "doctor",
+    "version",
+    "prompt",
+    "help",
+    "DargoJiao v0.2.0",
+    "$dargojiao",
+)
+
+CI_MARKERS = (
+    "ubuntu-latest",
+    "windows-latest",
+    "tests/validate_repo.py",
+    "test_windows_scripts.ps1",
+    "test_dargo_cli.py",
 )
 
 
@@ -127,6 +206,10 @@ def _public_text_files(root: Path) -> list[Path]:
         if path.is_file()
         and not any(part in IGNORED_SCAN_PARTS for part in path.relative_to(root).parts)
     ]
+
+
+def _current_product_text_files(root: Path) -> list[Path]:
+    return _public_text_files(root)
 
 
 def validate(root: Path) -> list[str]:
@@ -146,12 +229,19 @@ def validate(root: Path) -> list[str]:
             if pattern.search(content):
                 errors.append(f"{relative}: contains {label}")
 
-    skill_path = root / "skills/dagojiao/SKILL.md"
+    for path in _current_product_text_files(root):
+        content = path.read_text(encoding="utf-8")
+        relative = path.relative_to(root)
+        for term in FORBIDDEN_CURRENT_PRODUCT_TERMS:
+            if term in content:
+                errors.append(f"{relative}: contains legacy or notification term {term}")
+
+    skill_path = root / "skills/dargojiao/SKILL.md"
     if skill_path.is_file():
         skill_text = skill_path.read_text(encoding="utf-8")
         for marker in SKILL_MARKERS:
             if marker not in skill_text:
-                errors.append(f"skills/dagojiao/SKILL.md: missing marker {marker}")
+                errors.append(f"skills/dargojiao/SKILL.md: missing marker {marker}")
 
     prompt_path = root / "templates/automation-prompt.md"
     if prompt_path.is_file():
@@ -164,7 +254,7 @@ def validate(root: Path) -> list[str]:
             if term.lower() in lowered:
                 errors.append(f"templates/automation-prompt.md: forbidden runtime term {term}")
 
-    bundled_prompt = root / "skills/dagojiao/templates/automation-prompt.md"
+    bundled_prompt = root / "skills/dargojiao/templates/automation-prompt.md"
     if prompt_path.is_file() and bundled_prompt.is_file():
         if prompt_path.read_bytes() != bundled_prompt.read_bytes():
             errors.append("automation prompt copies differ")
@@ -179,6 +269,12 @@ def validate(root: Path) -> list[str]:
     script_contracts = {
         "scripts/install.sh": INSTALL_MARKERS,
         "scripts/doctor.sh": DOCTOR_MARKERS,
+        "dargo": (
+            "set -euo pipefail",
+            "install|doctor|version|prompt|help",
+            "DargoJiao v0.2.0",
+            "$dargojiao",
+        ),
     }
     for relative, markers in script_contracts.items():
         script_path = root / relative
@@ -188,8 +284,30 @@ def validate(root: Path) -> list[str]:
         for marker in markers:
             if marker not in script_text:
                 errors.append(f"{relative}: missing marker {marker}")
-        if not script_path.stat().st_mode & stat.S_IXUSR:
+        if os.name != "nt" and not script_path.stat().st_mode & stat.S_IXUSR:
             errors.append(f"{relative}: is not executable")
+
+    windows_script_contracts = {
+        "scripts/install.ps1": WINDOWS_INSTALL_MARKERS,
+        "scripts/doctor.ps1": WINDOWS_DOCTOR_MARKERS,
+        "scripts/dargo.ps1": WINDOWS_DARGO_MARKERS,
+        "dargo.cmd": ("powershell.exe", "scripts\\dargo.ps1", "%ERRORLEVEL%"),
+    }
+    for relative, markers in windows_script_contracts.items():
+        script_path = root / relative
+        if not script_path.is_file():
+            continue
+        script_text = script_path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in script_text:
+                errors.append(f"{relative}: missing marker {marker}")
+
+    workflow_path = root / ".github/workflows/ci.yml"
+    if workflow_path.is_file():
+        workflow_text = workflow_path.read_text(encoding="utf-8")
+        for marker in CI_MARKERS:
+            if marker not in workflow_text:
+                errors.append(f".github/workflows/ci.yml: missing marker {marker}")
 
     return errors
 

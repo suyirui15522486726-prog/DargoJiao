@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate public repository contract
+        run: python tests/validate_repo.py
+
+      - name: Test dargo command
+        run: python -m unittest discover -s tests -p 'test_dargo_cli.py' -v
+
+      - name: Check Bash syntax
+        run: bash -n dargo scripts/install.sh scripts/doctor.sh
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate public repository contract
+        run: python tests/validate_repo.py
+
+      - name: Test native PowerShell deployment
+        shell: powershell
+        run: .\tests\test_windows_scripts.ps1

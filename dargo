@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+command_name="${1:-help}"
+
+usage() {
+  printf 'Usage: ./dargo {install|doctor|version|prompt|help}\n'
+}
+
+case "$command_name" in
+  install)
+    exec "$repo_root/scripts/install.sh"
+    ;;
+  doctor)
+    exec "$repo_root/scripts/doctor.sh"
+    ;;
+  version)
+    printf 'DargoJiao v0.2.0\n'
+    ;;
+  prompt)
+    printf 'Use $dargojiao in Codex. Bootstrap prompt: templates/bootstrap-prompt.md\n'
+    ;;
+  help|-h|--help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
