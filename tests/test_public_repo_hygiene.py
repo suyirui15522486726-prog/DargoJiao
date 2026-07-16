@@ -31,6 +31,7 @@ REQUIRED_FILES = (
     "dargo",
     "dargo.cmd",
     "tests/test_windows_scripts.ps1",
+    ".github/workflows/ci.yml",
 )
 
 IGNORED_SCAN_PARTS = {".git", "tests", "__pycache__"}
@@ -184,6 +185,14 @@ WINDOWS_DARGO_MARKERS = (
     "$dargojiao",
 )
 
+CI_MARKERS = (
+    "ubuntu-latest",
+    "windows-latest",
+    "tests/validate_repo.py",
+    "test_windows_scripts.ps1",
+    "test_dargo_cli.py",
+)
+
 
 def _public_text_files(root: Path) -> list[Path]:
     return [
@@ -291,6 +300,13 @@ def validate(root: Path) -> list[str]:
         for marker in markers:
             if marker not in script_text:
                 errors.append(f"{relative}: missing marker {marker}")
+
+    workflow_path = root / ".github/workflows/ci.yml"
+    if workflow_path.is_file():
+        workflow_text = workflow_path.read_text(encoding="utf-8")
+        for marker in CI_MARKERS:
+            if marker not in workflow_text:
+                errors.append(f".github/workflows/ci.yml: missing marker {marker}")
 
     return errors
 
