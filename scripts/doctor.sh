@@ -29,6 +29,18 @@ else
   fail "Codex CLI is missing; install or update Codex Desktop"
 fi
 
+if command -v node >/dev/null 2>&1; then
+  pass "Node.js is available"
+else
+  fail "Node.js is missing"
+fi
+
+if command -v npm >/dev/null 2>&1; then
+  pass "npm is available"
+else
+  fail "npm is missing"
+fi
+
 if command -v lark-cli >/dev/null 2>&1; then
   pass "lark-cli is available"
   if lark-cli auth status --json --verify >/dev/null 2>&1; then

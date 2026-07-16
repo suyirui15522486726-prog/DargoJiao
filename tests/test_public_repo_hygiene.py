@@ -25,7 +25,12 @@ REQUIRED_FILES = (
     "docs/troubleshooting.md",
     "scripts/install.sh",
     "scripts/doctor.sh",
+    "scripts/install.ps1",
+    "scripts/doctor.ps1",
+    "scripts/dargo.ps1",
     "dargo",
+    "dargo.cmd",
+    "tests/test_windows_scripts.ps1",
 )
 
 IGNORED_SCAN_PARTS = {".git", "tests", "__pycache__"}
@@ -121,12 +126,47 @@ DOCTOR_MARKERS = (
     "set -euo pipefail",
     "command -v git",
     "command -v codex",
+    "command -v node",
+    "command -v npm",
     "command -v lark-cli",
     "lark-cli auth status --json --verify",
     "$HOME/.agents/skills",
     "PASS",
     "WARN",
     "FAIL",
+)
+
+WINDOWS_INSTALL_MARKERS = (
+    '$ErrorActionPreference = "Stop"',
+    "DARGOJIAO_SKILLS_DIR",
+    ".agents\\skills",
+    "dargojiao",
+    "Move-Item",
+    "PASS",
+)
+
+WINDOWS_DOCTOR_MARKERS = (
+    "Get-Command",
+    "git",
+    "codex",
+    "node",
+    "npm",
+    "lark-cli",
+    "auth status --json --verify",
+    "DARGOJIAO_SKILLS_DIR",
+    "PASS",
+    "WARN",
+    "FAIL",
+)
+
+WINDOWS_DARGO_MARKERS = (
+    "install",
+    "doctor",
+    "version",
+    "prompt",
+    "help",
+    "DargoJiao v0.2.0",
+    "$dargojiao",
 )
 
 
@@ -221,6 +261,21 @@ def validate(root: Path) -> list[str]:
                 errors.append(f"{relative}: missing marker {marker}")
         if not script_path.stat().st_mode & stat.S_IXUSR:
             errors.append(f"{relative}: is not executable")
+
+    windows_script_contracts = {
+        "scripts/install.ps1": WINDOWS_INSTALL_MARKERS,
+        "scripts/doctor.ps1": WINDOWS_DOCTOR_MARKERS,
+        "scripts/dargo.ps1": WINDOWS_DARGO_MARKERS,
+        "dargo.cmd": ("powershell.exe", "scripts\\dargo.ps1", "%ERRORLEVEL%"),
+    }
+    for relative, markers in windows_script_contracts.items():
+        script_path = root / relative
+        if not script_path.is_file():
+            continue
+        script_text = script_path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in script_text:
+                errors.append(f"{relative}: missing marker {marker}")
 
     return errors
 
