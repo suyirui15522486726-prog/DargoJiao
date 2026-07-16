@@ -54,8 +54,13 @@ try {
     $env:PATH = "$shimRoot;$windowsPowerShell;$system32"
     Assert-Equal 1 (Invoke-Dargo "doctor") "Doctor accepted a missing lark-cli"
 
-    & (Join-Path $repoRoot "dargo.cmd") unknown 2> $null
-    Assert-Equal 2 $LASTEXITCODE "Unknown command did not fail with exit code 2"
+    $unknownProcess = Start-Process `
+        -FilePath (Join-Path $repoRoot "dargo.cmd") `
+        -ArgumentList "unknown" `
+        -NoNewWindow `
+        -Wait `
+        -PassThru
+    Assert-Equal 2 $unknownProcess.ExitCode "Unknown command did not fail with exit code 2"
 
     Write-Output "PASS: Windows DargoJiao scripts"
 } finally {
