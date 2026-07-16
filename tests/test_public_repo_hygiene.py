@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import re
 import stat
+import tempfile
+import unittest
 from pathlib import Path
 
 
@@ -202,7 +204,7 @@ CI_MARKERS = (
     "windows-latest",
     "tests/validate_repo.py",
     "test_windows_scripts.ps1",
-    "test_dargo_cli.py",
+    "test_*.py",
 )
 
 
@@ -212,7 +214,16 @@ def _public_text_files(root: Path) -> list[Path]:
         for path in root.rglob("*")
         if path.is_file()
         and not any(part in IGNORED_SCAN_PARTS for part in path.relative_to(root).parts)
+        and _is_utf8_text(path)
     ]
+
+
+def _is_utf8_text(path: Path) -> bool:
+    try:
+        path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return False
+    return True
 
 
 def _current_product_text_files(root: Path) -> list[Path]:
@@ -325,5 +336,16 @@ def validate(root: Path) -> list[str]:
     return errors
 
 
-def test_public_repository_contract() -> None:
-    assert validate(Path(__file__).parents[1]) == []
+class PublicRepositoryHygieneTests(unittest.TestCase):
+    def test_public_repository_contract(self) -> None:
+        self.assertEqual(validate(Path(__file__).parents[1]), [])
+
+    def test_public_text_files_skip_binary_assets(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            text_file = root / "README.md"
+            text_file.write_text("DargoJiao", encoding="utf-8")
+            image_file = root / "preview.png"
+            image_file.write_bytes(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR")
+
+            self.assertEqual(_public_text_files(root), [text_file])
